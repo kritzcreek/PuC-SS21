@@ -1,0 +1,135 @@
+#+TITLE: Einfuehrungsveranstaltung
+#+DATE: 14.04.2021 PuC
+* Herzlich Willkommen!
+* Vorstellungsrunde
+** Wer bin ich?
+
+Christoph Hegemann (christoph.hegemann@th-koeln.de)
+
+Professioneller Compiler Entwickler
+Open Source Contributor
+Konferenz Speaker
+Seit letztem Jahr Dozent fuer PuC
+
+** Wer seid ihr?
+
+1. Vorstellung
+
+2. Erwartungen an den Kurs
+
+3. Erfahrungen mit Funktionaler Programmierung?
+
+4. Welche Programmiersprachen kennt/moegt ihr?
+
+** Unser Umgang
+
+Wir gehen respektvoll und umsichtig miteinander um. Niemand muss Angst haben
+eine Frage zu stellen. Es gibt keine dummen Fragen.
+
+Wenn etwas unklar ist bitte ich um direkte Nachfrage, unterbrecht mich! Falls
+eine zu grosse Teilnehmerzahl dies unmoeglich macht, werden wir einen Moderator
+bestimmen, der Fragen sammelt und zu einem geeigneten Zeitpunkt an mich weitergibt.
+
+Es ist auch immer moeglich mir eine E-Mail an christoph.hegemann@th-koeln.de zu
+schicken.
+
+* Organisatorisches
+
+** Vorlesungsformat
+
+Die Vorlesung wird drei wesentliche Medien verwenden:
+
+1. Slides
+    Zu Beginn der Vorlesung verbringen wir eine kurze(!) Zeit mit Slides um den Inhalt
+    der vorangegangenen Vorlesung kurz zu wiederholen.
+
+2. Whiteboarding
+    Dann werde ich via Screensharing ein Whiteboard mit euch teilen und unser naechstes
+    Thema einfuehren und besprechen. Anschliessend ...
+
+3. Livecoding
+    ... arbeiten wir *gemeinsam* an unserem Compiler, wobei ich tippen werde.
+    Wir implementieren dabei die zuvor erarbeiteten Konzepte.
+
+4. Diskussion
+    Wann immer Fragen auftreten, oder ich merke, dass wir zu grosse thematische Spruenge
+    machen, werde ich pausieren und zuvor erarbeitete Konzepte miteinander in Verbindung
+    bringen. Manchmal werden wir hierbei das Whiteboard benutzen, oftmals werde ich nur reden.
+
+** Ilias und Github
+
+ Die Slides, Whiteboard Notizen und aller Code wird auf Github
+ veroeffentlicht. Das Repository befindet sich hier:
+
+ https://github.com/kritzcreek/PuC-SS21
+
+ Ueber das Ilias werden wichtige Nachrichten fuer die Kursteilnehmer
+ verbreitet, achten Sie auf ihre E-Mails! Ich werde ausserdem vor jeder
+ Vorlesung E-Mails mit dem Zoom Link verschicken, und den Link im Ilias
+ eintragen.
+
+ Ausserdem werde ich Aufzeichnungen fuer alle Vorlesungen im Sciebo hochladen
+ und im Ilias mit Passwort verlinken.
+** Abschlussprojekt
+
+Etwa in der Mitte des Semesters werden wir fuer jeden Studenten Projekte festlegen.
+Diese werden in Gruppen von maximal zwei Studentinnenen/en bearbeitet. Bei einer
+ungeraden Anzahl von Teilnehmern kann es eine Dreiergruppe geben.
+
+Ich werde einige Themen vorschlagen, oder von Studenten vorgeschlagene Themen
+abgesegnen.
+
+Am Semesterende wird dann jede Gruppe ihr Projekt in einer Praesentation vorstellen
+die auf jeden Fall(!) eine Demonstration beinhalten wird.
+
+Zeitrahmen:
+ca. 15min Vortrag
+10min Demo und Fragen
+
+Fuer die Projekte fuehren wir eine eigene Anmeldung durch. Durch das Projekt wird
+benotet, das Projekt kann aber abgebrochen werden. (Niemand faellt "durch")
+
+** Zeit und "Ort"
+
+Die aktuelle Corona Situation sorgt dafuer, dass die gesamte Veranstaltung
+Remote stattfinden wird.
+
+Geplant ist Mittwochs von 11-13Uhr, passt das bei den meisten?
+
+** Vorraussetzungen und Resourcen
+
+Wir werden Kotlin benutzen, ich empfehle die "Kotlin Koans" als kurze Einfuehrung:
+
+https://play.kotlinlang.org/koans/overview
+
+Buecher und Paper mit relevantem Hintergrund und mehr Details und Theorie werde ich
+immer dann verlinken wenn wir das entsprechende Thema besprechen.
+
+** WICHTIG! Anmeldung
+  Bis zur naechsten Vorlesung eine Mail an christoph.hegemann@th-koeln.de (wichtig!)
+
+** Fragen zum Organisatorischen
+
+- Was habe ich vergessen, was wollt ihr noch wissen?
+
+* Was verstehen wir unter Compilern
+
+** Programme fuer Programme
+
+Es gibt Programme die als ihren Input andere Programme akzeptieren.
+
+Ein Compiler ist ein solches Programm. Programme koennen andere Programme...
+
+1. ... analysieren (Type checking, linting)
+2. ... in andere Programme transformieren
+       (In Maschinencode uebersetzen, automatisierte Refactorings)
+3. ... ausfuehren oder simulieren (Interpretation, Symbolische Evaluierung)
+
+Programme operieren auf Datenstrukturen.
+
+Wenn wir also einen Compiler schreiben wollen, muessen wir einen Weg finden Programme als
+Datenstruktur zu repraesentieren.
+
+** Unsere erste Programmiersprache
+
+=> Whiteboard
