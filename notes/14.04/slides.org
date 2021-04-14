@@ -23,15 +23,15 @@ Seit letztem Jahr Dozent fuer PuC
 
 ** Unser Umgang
 
-Wir gehen respektvoll und umsichtig miteinander um. Niemand muss Angst haben
-eine Frage zu stellen. Es gibt keine dummen Fragen.
+  Wir gehen respektvoll und umsichtig miteinander um. Niemand muss Angst haben
+  eine Frage zu stellen. Es gibt keine dummen Fragen.
 
-Wenn etwas unklar ist bitte ich um direkte Nachfrage, unterbrecht mich! Falls
-eine zu grosse Teilnehmerzahl dies unmoeglich macht, werden wir einen Moderator
-bestimmen, der Fragen sammelt und zu einem geeigneten Zeitpunkt an mich weitergibt.
+  Wenn etwas unklar ist bitte ich um direkte Nachfrage, unterbrecht mich! Falls
+  eine zu grosse Teilnehmerzahl dies unmoeglich macht, werden wir einen Moderator
+  bestimmen, der Fragen sammelt und zu einem geeigneten Zeitpunkt an mich weitergibt.
 
-Es ist auch immer moeglich mir eine E-Mail an christoph.hegemann@th-koeln.de zu
-schicken.
+  Es ist auch immer moeglich mir eine E-Mail an christoph.hegemann@th-koeln.de zu
+  schicken.
 
 * Organisatorisches
 
@@ -51,10 +51,7 @@ Die Vorlesung wird drei wesentliche Medien verwenden:
     ... arbeiten wir *gemeinsam* an unserem Compiler, wobei ich tippen werde.
     Wir implementieren dabei die zuvor erarbeiteten Konzepte.
 
-4. Diskussion
-    Wann immer Fragen auftreten, oder ich merke, dass wir zu grosse thematische Spruenge
-    machen, werde ich pausieren und zuvor erarbeitete Konzepte miteinander in Verbindung
-    bringen. Manchmal werden wir hierbei das Whiteboard benutzen, oftmals werde ich nur reden.
+(4). Diskussion
 
 ** Ilias und Github
 
@@ -77,10 +74,10 @@ Diese werden in Gruppen von maximal zwei Studentinnenen/en bearbeitet. Bei einer
 ungeraden Anzahl von Teilnehmern kann es eine Dreiergruppe geben.
 
 Ich werde einige Themen vorschlagen, oder von Studenten vorgeschlagene Themen
-abgesegnen.
+absegnen.
 
-Am Semesterende wird dann jede Gruppe ihr Projekt in einer Praesentation vorstellen
-die auf jeden Fall(!) eine Demonstration beinhalten wird.
+Am Semesterende wird dann jede Gruppe ihr Projekt in einer Praesentation vorstellen,
+welche auf jeden Fall(!) eine Demonstration beinhalten wird.
 
 Zeitrahmen:
 ca. 15min Vortrag
@@ -107,6 +104,13 @@ immer dann verlinken wenn wir das entsprechende Thema besprechen.
 
 ** WICHTIG! Anmeldung
   Bis zur naechsten Vorlesung eine Mail an christoph.hegemann@th-koeln.de (wichtig!)
+
+  Inhalt:
+
+  Ich Erika Musterfrau, moechte an PuC im Sommersemester 2021 teilnehmen.
+
+  Ich (habe vor/habe nicht vor) ein Projekt abzugeben.
+
 
 ** Fragen zum Organisatorischen
 
