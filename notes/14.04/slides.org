@@ -111,10 +111,15 @@ immer dann verlinken wenn wir das entsprechende Thema besprechen.
 
   Ich (habe vor/habe nicht vor) ein Projekt abzugeben.
 
+  Ich (habe/habe keinen) Stundenplan Konflikt mit Mittwochs 11-13Uhr.
+
 
 ** Fragen zum Organisatorischen
 
 - Was habe ich vergessen, was wollt ihr noch wissen?
+
+- Wann Projektabgabe?
+1-2 Wochen nach der Klausurphase, letztes Jahr Mitte Juli
 
 * Was verstehen wir unter Compilern
 
