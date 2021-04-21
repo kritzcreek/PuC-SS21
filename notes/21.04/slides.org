@@ -1,0 +1,54 @@
+#+TITLE: Zweite Vorlesung
+#+DATE: 21.04.2021 PuC
+* Herzlich Willkommen zur zweiten PuC Vorlesung
+
+** Organisatorisches
+
+Wir sind bei 60 Anmeldungen (Wow!)
+Ich freue mich riesig!
+
+Termin Konflikte gibt es bei etwas unter 10 Student*innen
+Wir bleiben bei Mittwoch 11 Uhr, ich lade die Vorlesungen weiterhin hoch
+
+Falls jemand in der Vorlesung sitzt der mir noch keine E-Mail
+geschrieben hat, tut sie/er das bitte bis zur naechsten Vorlesung.
+
+** Fragen?
+
+Einmal im Ilias zeigen wo Repository und Aufnahmen zu finden sind
+
+Gibt es zum Organisatorischem noch Fragen? Auch im Bezug auf letzte
+Vorlesung.
+
+* Wiederholung
+
+Abstrakte Syntax
+
+Programme als Bäume
+
+Bäume als rekursive Datenstrukturen
+
+Reduktion von Bäumen mit Rekursion
+
+Tree-rewrites - Bäume in andere Bäume überführen
+
+* Unsere erste /echte/ Programmiersprache
+
+Wir werden eine /funktionale/ Programmiersprache kompilieren
+
+Unsere erste Frage muss also sein... Was verstehen wir unter einer Funktion?
+
+** Was ist eine Funktion?
+
+- Variablen
+- Bindings und Scopes
+- Alpha-Equivalence
+
+** Das Lambda Kalkül
+
+- Funktionsapplikation
+- Substitution/Ersetzung
+- First-Order -> Higher-Order
+- Evaluation durch Beta-Reduktion
+- Divergente Ausdruecke
+- Moegliches Projekt: Namenlose Repraesentation des LC
