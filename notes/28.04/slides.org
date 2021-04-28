@@ -1,0 +1,106 @@
+#+TITLE: Dritte Veranstaltung
+#+DATE: 28.04.2021 PuC
+* Herzlich Willkommen
+
+Ich wuerde mich ueber eine paar Kameras freuen um besseres Feedback zu bekommen.
+
+Haben wir Neulinge? (Erklaeren wo Repository und Aufnahmen zu finden sind)
+
+Aufnahme starten
+
+* Wiederholung
+
+Was haben wir in der letzten Vorlesung gelernt?
+
+Highlight:
+Mul -> Add converter
+https://github.com/vonas/thk-puc/blob/061078540ac0df496df93f84b215faf1a84adc5a/src/main/kotlin/calculator/RemoveMulConverter.kt
+
+** Was verstehen wir unter Funktion?
+
+Eine Funktion besteht aus einem _Binder_ und einem _Body_:
+
+λx   ⇒ x + 1
+ ^      ^^^^^
+Binder   Body
+
+Eine Funktion ist ein First-Class-Value. Das heisst Funktionen koennen Argumente
+und Rueckgabewerte von anderen Funktionen sein.
+
+** Scoping
+
+Ein Binder bindet eine Variable fuer einen gewissen _Scope_.
+Im Lambda Calculus bedeutet das konkret, dass eine gebundene Variable
+fuer den Body des zugehoerigen Lambda's gueltig ist.
+
+(Kurzes Whiteboard Beispiel)
+
+** Der Lambda Calculus
+
+Der Lambda Calculus ist ein urspruenglich rein mathematisches System. John McCarthy
+basierte 1950 die Grundlagen der ersten LISPs auf dem LC.
+
+Der Lambda Calculus ist eine Turing-vollstaendige Programmiersprache
+(bewiesen durch Turing selbst).
+
+Der Lambda Calculus ist eine _funktionale_ Programmiersprache, und bildet die Basis
+fuer unsere eigene Programmiersprache.
+
+** Alpha-Äquivalenz
+
+Zwei Lambda Ausdruecke sind äquivalent, wenn sie sich lediglich durch die Namen
+von _gebundenen_ Variablen unterscheiden:
+
+λx ⇒ x = λy ⇒ y
+
+λx ⇒ y ≠ λy ⇒ y
+
+** Evaluation von Beta-Reduktion durch Substitution
+
+Die Anwendung von Funktionen im Lambda Calculus bezeichnet man auch als Beta-Reduktion.
+
+Wir wenden eine Funktion auf ein Argument an, indem wir alle Vorkommnisse der durch die
+Funktion gebundenen Variable im ihrem Body durch das Argument ersetzen.
+
+   ((λx ⇒ λy ⇒ x + y) 20) 1
+⇔ ([x → 20] λy ⇒ x + y) 1
+⇔ (λy ⇒ 20 + y) 1
+⇔ [y → 1] 20 + y
+⇔ 20 + 1
+
+* Alternative Methode zur Evaluation
+
+** Nachteile von Evaluation mittels Substitution
+
+- Name-Capture kompliziert den Algorithmus deutlich
+
+   (λx ⇒ (λy ⇒ x y)) y
+⇔ [x → y] λy ⇒ x y
+⇔ λy ⇒ y y <= ERROR
+
+- Performance! Wir traversieren unsere Baeume immer und immer wieder, was
+  zu einer super-linearen Laufzeit fuehrt.
+
+- Wir evaluieren zu viel. Das Einsetzen von Variablen in Ausdruecken
+  die eventuell nie evaluiert werden ist verschwenderisch.
+
+** Herauszoegern des Einsetzungsprozesses durch Environments
+
+Statt in der Evaluation den gesamten Ausdruck immer wieder umzuschreiben,
+merken wir uns Variablen Zuweisungen in einem _Environment_ und setzen diese
+nur ein wenn wir tatsaechlich eine Variable evaluieren wollen.
+
+   {}               ((λx ⇒ (λy ⇒ x + y)) 10) 5
+⇔ {x ⇒ 10 }        (λy ⇒ x + y) 5
+⇔ {x ⇒ 10, y ⇒ 5 } x + y
+⇔ {x ⇒ 10, y ⇒ 5 } 10 + y
+⇔ {x ⇒ 10, y ⇒ 5 } 10 + 5
+⇔                   15
+
+** Plan fuer heute
+
+- Evaluation mittels Closures
+- Expr vs Value
+- If-Expressions und Booleans
+- Die Y und Z Kombinatoren
+- Vorbesprechung Konkrete Syntax

@@ -2,8 +2,6 @@ sealed class Expr {
     data class Var(val name: String) : Expr()
     data class Lambda(val binder: String, val body: Expr) : Expr()
     data class Application(val func: Expr, val arg: Expr) : Expr()
-
-    // Fuer Anschaulichkeit
     data class Number(val n: Int) : Expr()
 }
 
@@ -82,8 +80,26 @@ fun main() {
 //    )
 //    println("${eval(expr)}")
 
-    val f = Expr.Lambda("x", Expr.Application(Expr.Var("x"), Expr.Var("x")))
-    val omega = Expr.Application(f, Expr.Application(f, f));
-    println("${eval(omega)}")
+//    val f = Expr.Lambda("x", Expr.Application(Expr.Var("x"), Expr.Var("x")))
+//    val omega = Expr.Application(f, Expr.Application(f, f));
+//    println("${eval(omega)}")
 
+    // (λx ⇒ (λy ⇒ x y)) y
+    // (λy ⇒ y y)
+    val e = Expr.Application(
+        Expr.Lambda(
+            "x", Expr.Lambda(
+                "y",
+                Expr.Application(Expr.Var("x"), Expr.Var("y"))
+            )
+        ), Expr.Var("y")
+    )
+    println("${eval(e)}")
+
+    val add10: () -> ((Int) -> Int) = {
+        val x = 10;
+        { y: Int -> x + y }
+    }
+    val x = 20
+    println(add10()(5))
 }
