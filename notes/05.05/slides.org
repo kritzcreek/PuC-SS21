@@ -1,0 +1,105 @@
+#+TITLE: Vierte Vorlesung
+#+DATE: 05.05.2021 PuC
+* Herzlich Willkommen
+
+Bitte an die Kameras denken
+
+Aufnahme starten
+
+* Wiederholung
+
+** If-Ausdruecke
+
+Ein If-Ausdruck beinhaltet 3 Sub-Ausdruecke:
+
+  - Eine Bedingung
+  - Einen Then-Branch
+  - Einen Else-Branch
+
+
+** Closures
+
+Unter einer Closure verstehen wir ein Lambda, das ein Environment eingeschlossen hat.
+
+(enclose -> einschließen)
+
+** Expressions vs Values
+
+Wir haben in unserem Interpreter eine Unterscheidung zwischen Expressions
+und Values gemacht.
+
+Expressions bezeichnen Sprachkonstrukte die zur Compilezeit/in den Programmen
+unserer Nutzer existieren.
+
+Mit Values bezeichnen wir die Werte die zur Laufzeit von Variablen gehalten werden
+koennen. Values lassen sich nicht weiter reduzieren/evaluieren.
+
+** Evaluation via Closures
+
+Evaluation durch Einsetzen/Substitution hat verschiedene Schwierigkeiten und Nachteile.
+
+Closures erlauben es uns das Einsetzen von Ausdruecken fuer Variablen zu verzoegern,
+und damit diese Nachteile zu vermeiden.
+
+Alle euch bekannten Sprachen mit Funktionen erster Klasse (Lambdas) verwenden zur Laufzeit
+Closures um diese zu repraesentieren.
+
+** Rekursion & Der Z-Kombinator
+
+Rekursion ist im Lambda Calculus kein explizites Feature. Ein Lambda kann sich nicht
+selber referenzieren.
+
+Durch _Fixpunkt Kombinatoren_ wie dem Y und Z Kombinator, koennen wir jedoch Rekursion
+selbst implementieren. Dies macht den Lambda Calculus Turing-vollstaendig.
+
+Uebung: Fibonacci Sequenz
+* Konkrete Syntax
+
+Als Programmierer wollen wir unserem Compiler keine Baeume malen. Stattdessen schreiben wir
+Code in Textform.
+
+Als Compilerschreiber wollen wir trotzdem Programme weiter als Abstrakte Syntax Baeume
+verarbeiten.
+
+Also wir muessen eine Transformation von Text nach AST implementieren.
+
+Diese Transformation nennt man _Parsen_, oder die Komponente die die Transformation durchfuehrt,
+einen _Parser_.
+* Parser
+** Wie ist ein Parser aufgebaut?
+
+Parser fuer Programmiersprachen sind in der Regel in zwei Phasen aufgeteilt.
+
+Text -> AST
+
+Text -> /Tokens/ -> AST
+    ^^^^
+
+Diesen zusaetzlichen Schritt nennt man _lexikalische Analyse_ oder kurz _Lexer_.
+
+Eine gute Analogie zur natuerlichen Sprache ist, dass Grammatik nicht fuer einzelne Buchstaben,
+sondern fuer Woerter und Punktuation definiert ist.
+
+Der Lexer erkennt "Woerter" und "Punktuation" und gibt sie als einen Strom von Tokens aus
+** Theorie
+
+Parsing ist eine der aeltesten Informatik-Disziplinen mit tiefen Wurzeln in der
+Automatentheorie
+
+In Theoretischer Informatik habt ihr euch bereits mit Grammatiken, regulaeren Ausdruecken und
+verschiedenen Automaten (NDFA, DFA, ...) auseinandergesetzt.
+
+Fuer unseren Parser werden wir statt dieser Methoden den sogenannten "Rekursiven Abstieg"
+verwenden. Diese Technik braucht wenig Theorie und ergibt Parser die sich recht "intuitiv"
+lesen lassen.
+
+Ich wuerde mich sehr freuen wenn sich Gruppen fuer ihre Projekte mit anderen Parsertechniken
+und der Theorie auseinandersetzen und uns praesentieren wuerden.
+
+
+* Plan fuer Heute
+  - Unsere konkrete Syntax
+  - Was sind Tokens?
+  - Lookahead
+  - Lexer
+  - Parser (Soweit wir kommen)
