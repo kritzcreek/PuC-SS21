@@ -19,6 +19,12 @@ sealed class Token {
     object BACKSLASH : Token()
     object ARROW : Token()
 
+    // Operatoren
+    object PLUS : Token()
+    object MINUS : Token()
+    object MUL : Token()
+    object DOUBLE_EQUALS : Token()
+
     data class IDENT(val ident: String) : Token()
 
     // Literals
@@ -61,12 +67,22 @@ class Lexer(input: String) {
         return when (val c = iter.next()) {
             '(' -> Token.LPAREN
             ')' -> Token.RPAREN
+            '+' -> Token.PLUS
+            '-' -> Token.MINUS
+            '*' -> Token.MUL
             '\\' -> Token.BACKSLASH
-            '=' -> if (iter.peek() == '>') {
-                iter.next()
-                Token.ARROW
-            } else {
-                throw Exception("Expected '>' but saw '${iter.next()}'")
+            '=' -> when (iter.peek()) {
+                '>' -> {
+                    iter.next()
+                    Token.ARROW
+                }
+                '=' -> {
+                    iter.next()
+                    Token.DOUBLE_EQUALS
+                }
+                else -> {
+                    throw Exception("Expected '>' or '=' but saw '${iter.next()}'")
+                }
             }
             else -> when {
                 c.isJavaIdentifierStart() -> ident(c)
@@ -115,19 +131,87 @@ class Lexer(input: String) {
 }
 
 class Parser(val tokens: Lexer) {
+
     fun parseExpr(): Expr {
-        return when (val t = tokens.next()) {
-            is Token.BOOLEAN_LIT -> Expr.Boolean(t.b)
-            is Token.NUMBER_LIT -> Expr.Number(t.n)
-            is Token.IDENT -> Expr.Var(t.ident)
-            is Token.IF -> parseIf()
-            is Token.BACKSLASH -> parseLambda()
-            is Token.LPAREN -> parseParenthesized()
-            else -> throw Exception("Unexpected token: $t")
+        return parseBinary(0)
+    }
+
+    fun parseBinary(minBP: Int): Expr {
+        var lhs: Expr = parseApplication()
+        while (true) {
+            val op = parseOperator() ?: break
+            val (leftBP, rightBP) = bindingPower(op)
+            if (leftBP < minBP) {
+                break
+            }
+            tokens.next()
+            val rhs = parseBinary(rightBP)
+            lhs = Expr.Binary(op, lhs, rhs)
+        }
+
+        return lhs
+    }
+
+    private fun parseOperator(): Operator? {
+        return when(tokens.peek()) {
+            Token.PLUS -> Operator.Plus
+            Token.MINUS -> Operator.Minus
+            Token.MUL -> Operator.Multiply
+            Token.DOUBLE_EQUALS -> Operator.Equals
+            else -> null
         }
     }
 
+    fun bindingPower(op: Operator): Pair<Int, Int> {
+        return when(op) {
+            Operator.Equals -> 1 to 2
+            Operator.Plus, Operator.Minus -> 3 to 4
+            Operator.Multiply ->5 to 6
+        }
+    }
+
+    fun parseApplication(): Expr {
+        val func = parseAtom()
+        val args: MutableList<Expr> = mutableListOf()
+        while (true) {
+            args += tryParseAtom() ?: break
+        }
+        return args.fold(func) { acc, arg -> Expr.Application(acc, arg) }
+    }
+
+    fun parseAtom(): Expr {
+        return tryParseAtom() ?: throw Exception("Expected expression, but saw unexpected token: ${tokens.peek()}")
+    }
+
+    fun tryParseAtom(): Expr? {
+        return when (val t = tokens.peek()) {
+            is Token.BOOLEAN_LIT -> parseBoolean()
+            is Token.NUMBER_LIT -> parseNumber()
+            is Token.IDENT -> parseVar()
+            is Token.IF -> parseIf()
+            is Token.BACKSLASH -> parseLambda()
+            is Token.LPAREN -> parseParenthesized()
+            else -> null
+        }
+    }
+
+    private fun parseBoolean(): Expr {
+        val t = expectNext<Token.BOOLEAN_LIT>("boolean literal")
+        return Expr.Boolean(t.b)
+    }
+
+    private fun parseNumber(): Expr {
+        val t = expectNext<Token.NUMBER_LIT>("number literal")
+        return Expr.Number(t.n)
+    }
+
+    private fun parseVar(): Expr {
+        val t = expectNext<Token.IDENT>("identifier")
+        return Expr.Var(t.ident)
+    }
+
     private fun parseParenthesized(): Expr {
+        expectNext<Token.LPAREN>("(")
         val inner = parseExpr()
         expectNext<Token.RPAREN>(")")
         return inner
@@ -135,6 +219,7 @@ class Parser(val tokens: Lexer) {
 
     private fun parseLambda(): Expr {
         // \binder => body
+        expectNext<Token.BACKSLASH>("\\")
         val binder = expectNext<Token.IDENT>("ident").ident
         expectNext<Token.ARROW>("=>")
         val body = parseExpr()
@@ -143,6 +228,7 @@ class Parser(val tokens: Lexer) {
 
     // if true then 3 else 4
     private fun parseIf(): Expr.If {
+        expectNext<Token.IF>("if")
         val condition = parseExpr()
         expectNext<Token.THEN>("then")
         val thenBranch = parseExpr()
@@ -169,11 +255,17 @@ fun test(input: String) {
     }
     println(lexer.next())
 }
+
 fun testParser(input: String) {
     println("Parsing: $input")
     val lexer = Lexer(input)
     val parser = Parser(lexer)
     println(parser.parseExpr())
+}
+
+fun testEval(input: String) {
+    println("Evaluating: $input")
+    println(eval(persistentHashMapOf(), Parser(Lexer(input)).parseExpr()))
 }
 
 fun main() {
@@ -209,7 +301,10 @@ fun main() {
     testParser("5")
 
 
-    val input = "if true then 3 else 4"
+    val input = """(\x => if x then 3 else 4) false"""
     println(eval(persistentHashMapOf(), Parser(Lexer(input)).parseExpr()))
+
+    testParser("1 + 2")
+    testEval("2 * 2 + 3 == 7")
 }
 

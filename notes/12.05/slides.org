@@ -1,0 +1,101 @@
+#+TITLE: Fuenfte Vorlesung
+#+DATE: 12.05.2021 PuC
+* Herzlich Willkommen
+
+Bitte an die Kameras denken
+
+Aufnahme starten
+
+* Wiederholung
+** Parsing
+
+Im Abstrakten beschreibt Parsen das Erkennen von Struktur in Daten.
+
+In unserem konkreten Fall sagen wir "parsen", wenn wir den Quellcode als
+Text in unseren AST ueberfuehren.
+
+Weil der Sprung von Text zu AST zu gross ist, haben wir den Parsing Prozess
+in zwei Schritte aufgeteilt. Einen /Lexer/ und den eigentlichen /Parser/
+
+** Der Lexer
+
+Ein Lexer bricht Text in einen Stream von /Tokens/. Wenn der Parser die
+/Grammatik/ unserer Sprache erkennt, so erkennt der Lexer die Woerter und
+Punktuation.
+
+Unser Lexer erkennt Keywords, Symbole, Identifier, und Literale und stellt sie
+dem Parser als Iterator zur Verfuegung. Es ist wichtig, dass wir dem Parser
+hierbei erlauben /ein Token/ weit in die Zukunft zu schauen ohne es zu konsumieren.
+
+Ein sogenannter /lookahead/ von 1
+
+Ein Beispiel:
+
+(\x => add x 10)
+
+LEFT_PAREN, BACKSLASH, IDENT(x), ARROW, IDENT(add),
+IDENT(x), NUMBER(10), RIGHT_PAREN, END_OF_FILE
+
+** Der Parser
+
+Der Parser akzeptiert die durch den Lexer produzierten Tokens und setzt sie in unseren
+AST um.
+
+Hierbei verwenden wir die Parsing Strategie des /rekursiven Abstiegs/. Konkret bedeutet
+dies, dass unser Parser aus einer Reihe von untereinander rekursiven Funktionen besteht.
+
+** Uebung
+
+1. Zeilenkommentar
+2. Blockkommentar
+3. Geschachtelter Blockkommentar
+
+* Syntax fuer Funktionsapplikation
+
+Unsere Syntax fuer Funktionsapplikation ist die Trennung durch Whitespace.
+
+Im Lambda Calculus entspricht =f a b= diesem Kotlin code =f(a)(b)=.
+
+Funktionsapplikation ist _links-assoziativ_, dadurch spielt es gut mit currying zusammen:
+
+(\c => \x => \y => if c then x else y) true 10 20
+
+* Linkrekursion
+
+Wenn wir vorgehen wie bisher koennen wir Funktionsapplikation nicht parsen.
+
+E := E E
+
+// Warum geht das nicht?
+func parseExpr() {
+  val func = parseExpr()
+  val arg = parseExpr()
+  return Application(func, arg)
+}
+
+Um das Problem der Linksrekursion zu umgehen verwenden wir im
+rekursiven Abstieg imperative Konstrukte (Loops).
+
+* Agenda fuer Heute (Teil 1)
+
+- Applikationen parsen
+- Pratt Parsing
+  Blogpost: https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
+* Unsere Compiler Pipeline
+
+Unser (und fast jeder andere) Compiler definiert eine Reihe von Schritten,
+die den Weg von Quellcode nach Ausfuehrung beschreiben und ihre Resultate wie
+in einer Pipeline an den naechsten Schritt weitergeben.
+
+Aktuell sieht unser Compiler wie folgt aus:
+
+text => Lexer => tokens => Parser => ast => Typechecker => ast => Interpreter => value
+
+Es ist eine gute Idee sich diese Pipeline einzupraegen um sich in unserem
+Compiler orientieren zu koennen.
+
+Der letzte "wichtige" Schritt der unserer Pipeline fehlt ist der /Typechecker/.
+
+* Agenda fuer Heute (Teil 2)
+- Was sind Typen?
+- "Preservation & Progress"

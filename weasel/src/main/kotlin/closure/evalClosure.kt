@@ -9,9 +9,12 @@ sealed class Expr {
     data class Application(val func: Expr, val arg: Expr) : Expr()
     data class Number(val n: Int) : Expr()
     data class Boolean(val b: kotlin.Boolean) : Expr()
-    data class Addition(val summand1: Expr, val summand2: Expr) : Expr()
-    data class Equals(val x: Expr, val y: Expr) : Expr()
+    data class Binary(val operator: Operator, val x: Expr, val y: Expr) : Expr()
     data class If(val condition: Expr, val thenBranch: Expr, val elseBranch: Expr) : Expr()
+}
+
+enum class Operator {
+    Equals, Plus, Minus, Multiply
 }
 
 typealias Env = PersistentMap<String, Value>
@@ -47,11 +50,16 @@ fun eval(env: Env, expr: Expr): Value {
                 eval(env, expr.elseBranch)
             }
         }
-        is Expr.Addition -> {
-            plusValue(eval(env, expr.summand1), eval(env, expr.summand2))
-        }
-        is Expr.Equals -> {
-            equalsValue(eval(env, expr.x), eval(env, expr.y))
+        is Expr.Binary -> {
+            when (expr.operator) {
+                Operator.Equals -> equalsValue(eval(env, expr.x), eval(env, expr.y))
+                Operator.Multiply ->
+                    evalBinaryNumber(eval(env, expr.x), eval(env, expr.y)) { x, y -> x * y }
+                Operator.Plus ->
+                    evalBinaryNumber(eval(env, expr.x), eval(env, expr.y)) { x, y -> x + y }
+                Operator.Minus ->
+                    evalBinaryNumber(eval(env, expr.x), eval(env, expr.y)) { x, y -> x - y }
+            }
         }
     }
 }
@@ -62,10 +70,10 @@ fun equalsValue(x: Value, y: Value): Value {
     return Value.Boolean(v1n.n == v2n.n)
 }
 
-fun plusValue(v1: Value, v2: Value): Value {
-    val v1n = v1 as? Value.Number ?: throw Exception("Can't add $v1, it's not a number")
-    val v2n = v2 as? Value.Number ?: throw Exception("Can't add $v2, it's not a number")
-    return Value.Number(v1n.n + v2n.n)
+fun evalBinaryNumber(v1: Value, v2: Value, f: (Int, Int) -> Int): Value {
+    val v1n = v1 as? Value.Number ?: throw Exception("Can't use a binary operation on $v1, it's not a number")
+    val v2n = v2 as? Value.Number ?: throw Exception("Can't use a binary operation on $v2, it's not a number")
+    return Value.Number(f(v1n.n, v2n.n))
 }
 
 fun test(expr: Expr) {
@@ -107,15 +115,15 @@ fun main() {
         )
     )
     test(Expr.Application(Expr.Number(5), Expr.Number(20)))
-    test(Expr.Addition(Expr.Number(5), Expr.Number(10)))
-    test(Expr.Addition(identity, Expr.Number(10)))
+    test(Expr.Binary(Operator.Plus, Expr.Number(5), Expr.Number(10)))
+    test(Expr.Binary(Operator.Plus, identity, Expr.Number(10)))
     test(Expr.If(Expr.Boolean(true), Expr.Number(42), Expr.Number(10)))
     test(Expr.If(Expr.Boolean(false), Expr.Number(42), Expr.Number(10)))
-    test(Expr.Equals(Expr.Number(10), Expr.Number(10)))
-    test(Expr.Equals(Expr.Number(10), Expr.Number(11)))
+    test(Expr.Binary(Operator.Equals, Expr.Number(10), Expr.Number(10)))
+    test(Expr.Binary(Operator.Equals, Expr.Number(10), Expr.Number(11)))
     test(
         Expr.If(
-            Expr.Equals(Expr.Number(10), Expr.Number(10)),
+            Expr.Binary(Operator.Equals, Expr.Number(10), Expr.Number(10)),
             Expr.Number(42),
             Expr.Number(10)
         )
@@ -123,38 +131,8 @@ fun main() {
 
     println(sum(5)) // 1 + 2 + 3 + 4 + 5 == 15
 
-    // (\x => f(\v => x x v))
-    val innerZ = Expr.Lambda(
-        "x",
-        Expr.Application(
-            Expr.Var("f"),
-            Expr.Lambda(
-                "v", Expr.Application(
-                    Expr.Application(Expr.Var("x"), Expr.Var("x")), Expr.Var("v")
-                )
-            )
-        )
-    )
-    // Z: \f => innerZ innerZ
-    val z = Expr.Lambda("f", Expr.Application(innerZ, innerZ))
-
-    // \f -> \n -> if n == 0 then 0 else n + f (n + -1)
-    val sumSingle = Expr.Lambda(
-        "sum", Expr.Lambda(
-            "n", Expr.If(
-                Expr.Equals(Expr.Var("n"), Expr.Number(0)),
-                Expr.Number(0),
-                Expr.Addition(
-                    Expr.Var("n"),
-                    Expr.Application(
-                        Expr.Var("sum"),
-                        Expr.Addition(Expr.Var("n"), Expr.Number(-1))
-                    )
-                )
-
-            )
-        )
-    )
+    val z = Parser(Lexer("""\f => (\x => f(\v => x x v)) (\x => f(\v => x x v))""")).parseExpr()
+    val sumSingle = Parser(Lexer("""\f => \n => if n == 0 then 0 else n + f (n - 1)""")).parseExpr()
 
     val sumLambda = Expr.Application(z, sumSingle)
 
