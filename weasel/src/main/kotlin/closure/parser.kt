@@ -166,7 +166,7 @@ class Parser(val tokens: Lexer) {
         return when(op) {
             Operator.Equals -> 1 to 2
             Operator.Plus, Operator.Minus -> 3 to 4
-            Operator.Multiply ->5 to 6
+            Operator.Multiply -> 5 to 6
         }
     }
 

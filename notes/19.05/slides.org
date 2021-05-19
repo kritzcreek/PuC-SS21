@@ -1,0 +1,98 @@
+#+TITLE: Sechste Vorlesung
+#+DATE: 19.05.2021 PuC
+* Herzlich Willkommen
+
+Bitte an die Kameras denken
+
+Aufnahme starten
+
+* Wiederholung
+
+** Syntax fuer Funktionsapplikation
+
+Wir wenden Funktionen auf Argumente an indem wir sie nebeneinander schreiben.
+Das nennt man auch "application via juxtaposition".
+
+=f x=
+=(\x ⇒ x + 1) 41= == 42
+=(\x ⇒ \y ⇒ x + y) 20 22=
+
+Funktionsapplikation ist _links-assoziativ_
+
+~f x y = (f x) y~
+~f x y z = ((f x) y) z~
+~f x + 1 /= f (x + 1)~
+~f (x y) z = (f (x y)) z~
+
+** Pratt-Parsing
+
+Wir verwenden Pratt Parsing um Ausdruecke mit binaeren Operatoren zu parsen.
+
+Pratt parsing kombiniert Rekursion mit imperativen Konstrukten um Operatoren
+anhand einer _binding power_ Tabelle zu assoziieren.
+
+#+begin_src
+1 * 2 + 3 ⇒ (1 * 2) + 3
+1 + 2 == 3 ⇒ (1 + 2) == 3
+1 * 2 + 3 == 4 ⇒ ((1 * 2) + 3) == 4
+#+end_src
+
+* Typen
+
+** (Wiederholung) Was sind Typen?
+
+- Typen beschreiben Werte/Ausdruecke
+- Typen bilden Kategorien
+- Es gibt _primitive_ Typen: Number, Boolean
+
+(Nochmal auf Literal vs Primitiv eingehen)
+
+Notation:
+Wir schreiben "Ausdruck e hat den Typ t" als:
+
+ e : t
+
+** Praeservation
+
+Ein Ausdruck veraendert seinen Typ nicht wenn wir ihn evaluieren.
+
+3 + 4 = 7
+
+7 hat den Typ Number, sodass auch 3 + 4 den Typ Number hat.
+
+(\x => if x then 1 else true) ist in unserer Sprache kein typbarer Wert.
+
+** Praezedenz des Funktionspfeils
+
+Number
+Boolean
+
+Number -> Number
+
+x : Number -> (Number -> Number)
+x = \a -> (\b -> a + b)
+
+y : (Number -> Number) -> Number
+y = \a -> a 10
+** Typ Quiz
+
+* Typinferenz
+
+"Typinferenz beschreibt die automatische Detektion des Typen eines
+Ausdrucks in einer Programmiersprache"
+
+- Programmiersprache
+- Ausdruck
+- Typ
+
+- _Detektion_
+
+* Uebung fuers naechste Mal
+
+Parser fuer Typen
+
+"Number"
+"Boolean"
+"Number -> Number"
+"Number -> Number -> Number"
+"(Number -> Number) -> Number"
