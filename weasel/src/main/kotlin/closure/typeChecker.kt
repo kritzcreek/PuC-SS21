@@ -1,7 +1,9 @@
 package closure
 
 import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashMapOf
+import kotlinx.collections.immutable.persistentSetOf
 
 sealed class Monotype {
     object Number: Monotype()
@@ -21,6 +23,14 @@ sealed class Monotype {
             is Unknown -> "u$u"
         }
     }
+
+    fun unknowns(): PersistentSet<Int> {
+        return when(this){
+            Bool, Number -> persistentSetOf()
+            is Fun -> this.arg.unknowns().addAll(this.res.unknowns())
+            is Unknown -> persistentSetOf(this.u)
+        }
+    }
 }
 
 var supply = 0
@@ -32,7 +42,45 @@ fun freshUnknown(): Monotype {
 typealias Context = PersistentMap<String, Monotype>
 val emptyContext: Context  = persistentHashMapOf()
 
-val equalities: MutableList<Pair<Monotype, Monotype>> = mutableListOf()
+typealias Solution = HashMap<Int, Monotype>
+var solution: Solution = HashMap()
+
+fun applySolution(ty: Monotype): Monotype {
+    return when(ty){
+        Monotype.Bool, Monotype.Number -> ty
+        is Monotype.Fun -> Monotype.Fun(applySolution(ty.arg), applySolution(ty.res))
+        is Monotype.Unknown -> solution[ty.u]?.let { applySolution(it) } ?: ty
+    }
+}
+
+fun unify(ty1: Monotype, ty2: Monotype) {
+    val ty1 = applySolution(ty1)
+    val ty2 = applySolution(ty2)
+    if (ty1 is Monotype.Number && ty2 is Monotype.Number) {
+        return
+    } else if (ty1 is Monotype.Bool && ty2 is Monotype.Bool) {
+        return
+    } else if (ty1 is Monotype.Fun && ty2 is Monotype.Fun) {
+        unify(ty1.arg, ty2.arg)
+        unify(applySolution(ty1.res), applySolution(ty2.res))
+    } else if (ty1 is Monotype.Unknown) {
+        solveUnknown(ty1.u, ty2)
+    } else if (ty2 is Monotype.Unknown) {
+        solveUnknown(ty2.u, ty1)
+    } else {
+        throw Exception("Can't unify $ty1 with $ty2")
+    }
+}
+
+fun solveUnknown(u: Int, ty: Monotype) {
+    if (ty is Monotype.Unknown && ty.u == u) {
+        return
+    } else if (ty.unknowns().contains(u)) {
+        throw Exception("Occurs check failed for u$u = $ty")
+    } else {
+        solution[u] = ty
+    }
+}
 
 fun infer(ctx: Context, expr: Expr): Monotype {
     when (expr) {
@@ -47,53 +95,53 @@ fun infer(ctx: Context, expr: Expr): Monotype {
             return ctx[expr.name] ?: throw Exception("Unbound variable ${expr.name}")
         }
         is Expr.Application -> {
-            val tyArg = infer(ctx, expr.arg)
-            val tyFun = infer(ctx, expr.func)
-            // tyFun = tyRes -> tyArg
             val tyRes = freshUnknown()
-            equalities += tyFun to Monotype.Fun(tyArg, tyRes)
+
+            val tyFun = infer(ctx, expr.func)
+            val tyArg = infer(ctx, expr.arg)
+            // tyFun = tyArg -> tyRes
+            unify(tyFun, Monotype.Fun(tyArg, tyRes))
             return tyRes
         }
         is Expr.Binary -> {
             when(expr.operator) {
                 Operator.Equals -> {
-                    equalities += infer(ctx, expr.x) to Monotype.Number
-                    equalities += infer(ctx, expr.y) to Monotype.Number
+                    unify(infer(ctx, expr.x), Monotype.Number)
+                    unify(infer(ctx, expr.y), Monotype.Number)
                     return Monotype.Bool
                 }
                 Operator.Plus -> {
-                    equalities += infer(ctx, expr.x) to Monotype.Number
-                    equalities += infer(ctx, expr.y) to Monotype.Number
+                    unify(infer(ctx, expr.x), Monotype.Number)
+                    unify(infer(ctx, expr.y), Monotype.Number)
                     return Monotype.Number
                 }
                 Operator.Minus ->{
-                    equalities += infer(ctx, expr.x) to Monotype.Number
-                    equalities += infer(ctx, expr.y) to Monotype.Number
+                    unify(infer(ctx, expr.x), Monotype.Number)
+                    unify(infer(ctx, expr.y), Monotype.Number)
                     return Monotype.Number
                 }
                 Operator.Multiply -> {
-                    equalities += infer(ctx, expr.x) to Monotype.Number
-                    equalities += infer(ctx, expr.y) to Monotype.Number
+                    unify(infer(ctx, expr.x), Monotype.Number)
+                    unify(infer(ctx, expr.y), Monotype.Number)
                     return Monotype.Number
                 }
             }
         }
-        is Expr.If -> TODO()
-    }
-}
-
-fun printEqualities() {
-    for ((t1, t2) in equalities) {
-        println("$t1 == $t2")
+        is Expr.If -> {
+            unify(infer(ctx, expr.condition), Monotype.Bool)
+            val tyReturn = infer(ctx, expr.thenBranch)
+            unify(infer(ctx, expr.elseBranch), tyReturn)
+            return tyReturn
+        }
     }
 }
 
 fun testInfer(expr: String, ctx: Context = emptyContext) {
+    solution = HashMap()
     val parsed = Parser(Lexer((expr))).parseExpr()
     try {
         val inferred = infer(ctx, parsed)
-        printEqualities()
-        println("$expr : $inferred")
+        println("$expr : ${applySolution(inferred)}")
     } catch (e: Exception) {
         println("Failed to infer type of $expr with: ${e.message}")
     }
@@ -106,7 +154,10 @@ fun main() {
 //    testInfer("x")
 //    testInfer("x", persistentHashMapOf("x" to Monotype.Number))
 //    testInfer("\\x => x")
-    testInfer("\\f => \\x => f (f x) + 10") // (Number -> Number) -> Number -> Number
+//    testInfer("""(\f => \x => x) (\x => x + 1) 10""")
+
+    testInfer("""(\f => f (f 10))""")
+//    testInfer("\\f => \\x => f x + 10") // (Number -> Number) -> Number -> Number
 }
 
 //\f => \x => f (f x) + 10 : (Number -> Number) -> Number -> Number

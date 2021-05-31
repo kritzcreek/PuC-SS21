@@ -1,0 +1,146 @@
+#+TITLE: Siebte Vorlesung
+#+DATE: 26.05.2021 PuC
+* Herzlich Willkommen
+
+Bitte an die Kameras denken
+
+Aufnahme starten
+
+* Agenda
+- Wiederholung
+- Typ Inferenz & Unifikation
+- Projektvorschlaege
+
+* Wiederholung
+** Laufzeitfehler vermeiden
+
+Unsere Syntax erlaubt es uns Programme zu schreiben die zur
+Laufzeit keine Bedeutung haben/crashen.
+
+| (\x => y) 10          | Unbound variable 'y'   |
+|-----------------------+------------------------|
+| true + 10             | 'true' is not a Number |
+|-----------------------+------------------------|
+| if 10 then 20 else 30 | '10' is not a Boolean  |
+|-----------------------+------------------------|
+| (20 + 3) true         | '23' is not a function |
+
+** Typen in unserer Programmiersprache
+
+#+begin_src
+t :=
+   // Primitive Typen:
+   | Int
+   | Boolean
+
+   // Funktionstypen:
+   | t -> t
+#+end_src
+
+Das Quiz wiederholen!
+
+** Typen in unserem Typechecker
+
+#+begin_src
+t :=
+   // Primitive Typen:
+   | Int
+   | Boolean
+
+   // Funktionstypen:
+   | t -> t
+
+   // Unknowns:
+   | u1, u2, ..., uN
+#+end_src
+
+Unknowns stehen fuer Typen die wir _noch nicht_ herausgefunden haben.
+
+* Typ Inferenz & Unifikation
+** Typ Inferenz
+
+Typ Inferenz beschreibt die automatische _Detektion_ des _Typs_ eines
+_Ausdrucks_ in einer _Programmiersprache_
+
+Unsere Sprache braucht keine einzige Typannotation um vollkommen statisch
+getypt zu sein!
+
+Typinferenz ist das Mittel die Vorteile von statischer Typisierung zu
+geniessen und gleichzeitig ergonomische Programmiersprachen zu
+entwickeln.
+
+** Typing Judgements
+
+Typing Judgements nutzen die Notation des "Natuerlichen Schliessens"
+oder der "Natural Deduction". Ein Beispiel:
+
+                              B   C
+                              -----
+                                A
+
+Dieses Judgement besagt, das wir wenn wir A zeigen/beweisen wollen, B und C
+zeigen muessen.
+
+Beispiel:
+(\x => \y => x) 10 true : Number
+
+** Inferenz als Constraint Solving Problem
+
+Inferenz fuer unsere Sprache erfolgt indem wir _Syntax gesteuert_ ueber
+unseren AST laufen (via Rekursion) und Gleichheits-Constraints sammeln.
+
+Wann immer wir einen Typ erst spaeter im Inferenz Vorgang herausfinden
+koennen erzeugen wir einen "Unknown" Typ und ersetzen diesen spaeter mit
+seiner Loesung.
+(Auch Metavariable, oder Unifikationsvariable genannt)
+
+Als Loesungsalgorithmus fuer diese Constraints verwenden wir Unifikation.
+
+* Projektvorschlaege
+
+** Projekteckdaten
+
+2 Teilnehmer Gruppen (3 Teilnehmer nur in Ausnahmen)
+
+Projekt muss Programmieranteil haben
+
+10min Praesentation + 10min Demonstration pro Projekt
+
+** Zeitplan
+
+Naechste Woche vergeben wir die Projekte
+
+Bis dahin reicht ihr bitte einen Projektvorschlag ein (oder nehmt einen von meinen)
+
+8te und 9te Vorlesung noch mit Inhalt von mir
+
+Ab der 10ten Woche woechentlich freiwillig Projektarbeitsphase zur gleichen Zeit
+
+Genauer Zeitpunkt fuer Vortraege naechste/uebernaechste Woche
+** Parsergenerator
+
+Beschaeftigt euch mit Table driven Parsergeneratoren wie ANTLR.
+
+Ersetzt unseren von Hand geschriebenen Parser mit einem durch eine
+Grammatik generierten
+
+** Prettyprinter
+
+Beschaeftigt euch mit Prettyprintern (Wadler-Leijen Style)
+
+Schreibt einen Prettyprinter (Autoformatter) fuer unsere Programmiersprache
+
+** Namenlose Repraesentation des Lambda Calculus
+
+Beschaeftigt euch mit De-Brujin Indizes, und dem Locally-Nameless Paper
+
+Schreibt einen Evaluator fuer den Lambda Calculus der ohne Renaming auskommt
+
+** Eure Vorschlaege?
+
+- Records
+let myRecord = { x = 1, y = true }
+
+- Mini-C (imperative Sprache)
+
+- Esoterische Programmiersprachen
