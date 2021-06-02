@@ -12,12 +12,16 @@ sealed class Token {
     object IF : Token()
     object THEN : Token()
     object ELSE : Token()
+    object LET : Token()
+    object IN : Token()
+
 
     // Symbols
     object LPAREN : Token()
     object RPAREN : Token()
     object BACKSLASH : Token()
     object ARROW : Token()
+    object EQUALS : Token()
 
     // Operatoren
     object PLUS : Token()
@@ -80,9 +84,7 @@ class Lexer(input: String) {
                     iter.next()
                     Token.DOUBLE_EQUALS
                 }
-                else -> {
-                    throw Exception("Expected '>' or '=' but saw '${iter.next()}'")
-                }
+                else -> Token.EQUALS
             }
             else -> when {
                 c.isJavaIdentifierStart() -> ident(c)
@@ -117,6 +119,8 @@ class Lexer(input: String) {
             "if" -> Token.IF
             "then" -> Token.THEN
             "else" -> Token.ELSE
+            "let" -> Token.LET
+            "in" -> Token.IN
             else -> Token.IDENT(result)
         }
     }
@@ -191,8 +195,19 @@ class Parser(val tokens: Lexer) {
             is Token.IF -> parseIf()
             is Token.BACKSLASH -> parseLambda()
             is Token.LPAREN -> parseParenthesized()
+            is Token.LET -> parseLet()
             else -> null
         }
+    }
+
+    private fun parseLet(): Expr {
+        expectNext<Token.LET>("let")
+        val binder = expectNext<Token.IDENT>("binder").ident
+        expectNext<Token.EQUALS>("equals")
+        val expr = parseExpr()
+        expectNext<Token.IN>("in")
+        val body = parseExpr()
+        return Expr.Let(binder, expr, body)
     }
 
     private fun parseBoolean(): Expr {

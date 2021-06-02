@@ -1,0 +1,234 @@
+#+TITLE: Achte Vorlesung
+#+DATE: 02.06.2021 PuC
+* Herzlich Willkommen
+
+Bitte an die Kameras denken
+
+Aufnahme starten
+
+* Agenda
+
+  Wiederholung
+
+  Let-bindings
+
+  Projektvergabe
+
+* Wiederholung
+
+
+** Programmierfehler
+
+   In der letzten Vorlesung habe ich einen Programmierfehler gemacht
+
+   Wir haben aufgegeben den Fehler zu suchen um ueber die Projekte zu sprechen
+
+   Im Nachhinein habe ich den Fehler dann gefunden (schauen wir ihn uns kurz an)
+
+** Typ Inferenz
+
+Typ Inferenz beschreibt die automatische _Detektion_ des _Typs_ eines
+_Ausdrucks_ in einer _Programmiersprache_
+
+Unsere aktuelle Sprache (Ausdruecke + Typsystem) nennt man den
+_Simply-Typed-Lambda Calculus_, oder kurz STLC.
+
+Unsere Sprache braucht keine einzige Typannotation um vollkommen statisch
+getypt zu sein!
+
+Typinferenz ist das Mittel die Vorteile von statischer Typisierung zu
+geniessen und gleichzeitig ergonomische Programmiersprachen zu
+entwickeln.
+
+** Typing Judgements
+
+Typing Judgements nutzen die Notation des "Natuerlichen Schliessens"
+oder der "Natural Deduction". Ein Beispiel:
+
+                              B   C
+                              -----
+                                A
+
+Dieses Judgement besagt, das wir wenn wir A zeigen/beweisen wollen, B und C
+zeigen muessen.
+
+Beispiel:
+(\x => \y => x) 10 true : Number
+
+** Inferenz als Constraint Solving Problem
+
+Inferenz fuer unsere Sprache erfolgt indem wir _Syntax gesteuert_ ueber
+unseren AST laufen (via Rekursion) und Gleichheits-Constraints sammeln.
+
+Wann immer wir einen Typ erst spaeter im Inferenz Vorgang herausfinden
+koennen erzeugen wir einen "Unknown" Typ und ersetzen diesen spaeter mit
+seiner Loesung.
+(Auch Metavariable, oder Unifikationsvariable genannt)
+
+Als Loesungsalgorithmus fuer diese Constraints verwenden wir Unifikation.
+
+Der Algorithmus den wir verwenden nennt man Algorithm-W
+** Fragen zur Wiederholung?
+
+* Limitationen des STLC
+
+- Es gibt aktuell keinen "richtigen" Typen fuer \x => x
+  Wir haben stattdessen unendlich viele gleich "korrekte":
+  - Bool -> Bool
+  - (Bool -> Bool) -> (Bool -> Bool)
+  - (Bool -> Bool -> Bool) -> (Bool -> Bool -> Bool)
+  - ...
+
+- Ausdruecke die in unserem dynamisch getypten Lambda Calculus
+  equivalent waren, schlagen im Typechecker fehl
+
+  (\x -> x) (\x -> x) 10 : Number = 10
+  (\f -> f f 10) (\x -> x) : ??? = 10
+
+- Es gibt keinen passenden typen fuer _fix_ (Den Z-Kombinator).
+
+* Loesung
+
+Diese Limitationen beschreiben unsere Unfaehigkeit _Polymorphismus_ zu
+beschreiben.
+
+Unser naechstes Ziel ist es also unsere Sprache um dieses
+Feature zu erweitern.
+
+Hierfuer benoetigen wir jedoch zuerst ein weiteres syntaktisches Konstrukt.
+
+* Let Bindings
+
+Ein Let-binding weist einer Variable einen Wert zu, und macht die Variable
+in einem bestimmtem Bereich unseres Programs verfuegbar.
+
+Syntax:
+
+let x = e1 in e2
+
+Die operationale Semantik (Laufzeitverhalten) laesst sich durch
+eine Uebersetzung in Lambda beschreiben:
+
+let x = e1 in e2 == (\x -> e1) e2
+
+* Motivation
+
+Warum brauchen wir Let's wenn sie zur Laufzeit als Lambdas ausgedrueckt
+werden koennen?
+
+** Ergonomik
+
+Wir wollen Variablen in Leserichtung definieren koennen:
+
+let x = 10 in
+let y = 32 in
+x + y
+
+vs:
+
+(\x -> \y -> x + y) 10 32
+
+** Polymorphismus
+
+Let-Bindings geben uns in unserem Typechecker einen Ort an dem wir
+Polymorphismus in unser System einfuehren koennen
+
+** Rekursion
+
+In Zukunft wollen wir Let-Bindings nutzen um Rekursion einzufuehren ohne
+den Z-Kombinator zu benoetigen
+
+* Plan
+
+- Beispiele durcharbeiten um gemeinsames Verstaendnis zu erreichen
+- Lexer um Tokens fuer let, in, und = erweitern
+- Parser
+- Interpreter
+- Typechecker (erstmal ohne Polymorphismus)
+* Projektplanung
+
+Parsergenerator
+- Theresa Ruppert
+- Rene Schneider
+
+Parsergenerator
+- Jan Kolodziejski
+- Ali Uenal
+
+Prettyprinter
+- Tim Esser
+- Tobias Bauer
+
+Namenlose Repraesentation des Lambda Calculus
+- Balde Thierno Abdourahmane
+- Sebastian Huebner
+
+Mini-C (mutable variablen, while loop, print, arithmetic, (prozeduren))
+- Lukas Momberg
+- Dennis Gossler
+
+Mini-C (Again (vielleicht ein bisschen anders))
+- Manuel Baecker
+- Jan Troeger
+
+Brainfuck Interpreter
+- Dennis Kettner
+- Christoph-Joseph Mueller
+
+Konfiguration/Templatesprache
+- Jannik Alexander
+- Bastian Abt
+
+Mini Wolfram Alpha (Lineare gleichungen parsen und loesen)
+- Tim Troeger
+- Marc Oedingen
+
+Deutsche Grammatik erkennen
+- Leon Peffekoever
+- Hanna Mueller
+
+Midi-Compiler
+- Kevin Roettel
+- Timon Kirch
+
+Parser-Kombinatoren
+- Moritz Brombach
+- Leon Schelzig
+
+Programmiersprache (genauere Absprache per Mail)
+- Mathieu Sorg
+- Christiane Zapp
+
+Parser/Mini C Projekt
+- M. Yavuz Goekmen
+- ?
+
+Datentypen zu unserer Sprache hinzufuegen
+- Tobias Marcus
+- Marvin Reuter
+
+UML Generator/ C/Python style convertierer
+- Dennis Buyse
+
+Verschiedene Algebraische Ausdruecke Parsen und Evaluieren
+- Hamza Bendraoui
+- Joel Eywas
+
+State Automaton Drawing
+- Fatima Sabra
+- Nico Gerasch
+
+Aeltere Chipsets
+- Holger Lucas
+
+Formatter fuer unsere Sprache (oder eine andere)
+- Serhat Nazlier
+
+Moegliche Ideen/Themenbereiche
+
+- WebAssembly
+- Visualierungen
+
+Alle die jetzt noch kein Projekt haben, aber gerne eine Note bekommen
+moechten schreiben bitte bis naechste Woche eine Mail mit einem
+Vorschlag an mich.

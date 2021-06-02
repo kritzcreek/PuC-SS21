@@ -49,7 +49,8 @@ fun applySolution(ty: Monotype): Monotype {
     return when(ty){
         Monotype.Bool, Monotype.Number -> ty
         is Monotype.Fun -> Monotype.Fun(applySolution(ty.arg), applySolution(ty.res))
-        is Monotype.Unknown -> solution[ty.u]?.let { applySolution(it) } ?: ty
+        is Monotype.Unknown ->
+            solution[ty.u]?.let { applySolution(it) } ?: ty
     }
 }
 
@@ -83,16 +84,16 @@ fun solveUnknown(u: Int, ty: Monotype) {
 }
 
 fun infer(ctx: Context, expr: Expr): Monotype {
-    when (expr) {
-        is Expr.Boolean -> return Monotype.Bool
-        is Expr.Number -> return Monotype.Number
+    return when (expr) {
+        is Expr.Boolean -> Monotype.Bool
+        is Expr.Number -> Monotype.Number
         is Expr.Lambda -> {
             val tyArg = freshUnknown()
             val tyBody = infer(ctx.put(expr.binder, tyArg), expr.body)
-            return Monotype.Fun(tyArg, tyBody)
+            Monotype.Fun(tyArg, tyBody)
         }
         is Expr.Var -> {
-            return ctx[expr.name] ?: throw Exception("Unbound variable ${expr.name}")
+            ctx[expr.name] ?: throw Exception("Unbound variable ${expr.name}")
         }
         is Expr.Application -> {
             val tyRes = freshUnknown()
@@ -101,29 +102,29 @@ fun infer(ctx: Context, expr: Expr): Monotype {
             val tyArg = infer(ctx, expr.arg)
             // tyFun = tyArg -> tyRes
             unify(tyFun, Monotype.Fun(tyArg, tyRes))
-            return tyRes
+            tyRes
         }
         is Expr.Binary -> {
             when(expr.operator) {
                 Operator.Equals -> {
                     unify(infer(ctx, expr.x), Monotype.Number)
                     unify(infer(ctx, expr.y), Monotype.Number)
-                    return Monotype.Bool
+                    Monotype.Bool
                 }
                 Operator.Plus -> {
                     unify(infer(ctx, expr.x), Monotype.Number)
                     unify(infer(ctx, expr.y), Monotype.Number)
-                    return Monotype.Number
+                    Monotype.Number
                 }
                 Operator.Minus ->{
                     unify(infer(ctx, expr.x), Monotype.Number)
                     unify(infer(ctx, expr.y), Monotype.Number)
-                    return Monotype.Number
+                    Monotype.Number
                 }
                 Operator.Multiply -> {
                     unify(infer(ctx, expr.x), Monotype.Number)
                     unify(infer(ctx, expr.y), Monotype.Number)
-                    return Monotype.Number
+                    Monotype.Number
                 }
             }
         }
@@ -131,7 +132,13 @@ fun infer(ctx: Context, expr: Expr): Monotype {
             unify(infer(ctx, expr.condition), Monotype.Bool)
             val tyReturn = infer(ctx, expr.thenBranch)
             unify(infer(ctx, expr.elseBranch), tyReturn)
-            return tyReturn
+            tyReturn
+        }
+        is Expr.Let -> {
+            val tyExpr = infer(ctx, expr.expr)
+            val tmpCtx = ctx.put(expr.binder, tyExpr)
+            val tyBody = infer(tmpCtx, expr.body)
+            tyBody
         }
     }
 }
@@ -156,8 +163,20 @@ fun main() {
 //    testInfer("\\x => x")
 //    testInfer("""(\f => \x => x) (\x => x + 1) 10""")
 
-    testInfer("""(\f => f (f 10))""")
+//    testInfer("""(\f => f (f 10))""")
 //    testInfer("\\f => \\x => f x + 10") // (Number -> Number) -> Number -> Number
+//    testInfer("""(\f => f f 10) (\x => x)""")
+    testInfer("""
+        let add3 = \x => x + 3 in
+        let twice = \f => \x => f (f x) in
+        twice add3 10
+    """.trimIndent())
+    testInfer("""
+        let identity = \x => x in
+        let y = identity 10 in
+        let z = identity true in
+        identity
+    """.trimIndent())
 }
 
 //\f => \x => f (f x) + 10 : (Number -> Number) -> Number -> Number

@@ -3,20 +3,6 @@ package closure
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentHashMapOf
 
-sealed class Expr {
-    data class Var(val name: String) : Expr()
-    data class Lambda(val binder: String, val body: Expr) : Expr()
-    data class Application(val func: Expr, val arg: Expr) : Expr()
-    data class Number(val n: Int) : Expr()
-    data class Boolean(val b: kotlin.Boolean) : Expr()
-    data class Binary(val operator: Operator, val x: Expr, val y: Expr) : Expr()
-    data class If(val condition: Expr, val thenBranch: Expr, val elseBranch: Expr) : Expr()
-}
-
-enum class Operator {
-    Equals, Plus, Minus, Multiply
-}
-
 typealias Env = PersistentMap<String, Value>
 
 sealed class Value {
@@ -31,6 +17,11 @@ fun eval(env: Env, expr: Expr): Value {
         is Expr.Boolean -> Value.Boolean(expr.b)
         is Expr.Var -> env[expr.name] ?: throw Exception("${expr.name} is not defined.")
         is Expr.Lambda -> Value.Closure(env, expr.binder, expr.body)
+        is Expr.Let -> {
+            val evaledExpr = eval(env, expr.expr)
+            val nestedEnv = env.put(expr.binder, evaledExpr)
+            eval(nestedEnv, expr.body)
+        }
         is Expr.Application -> {
             val evaledFunc = eval(env, expr.func)
             val evaledArg = eval(env, expr.arg)
@@ -76,7 +67,7 @@ fun evalBinaryNumber(v1: Value, v2: Value, f: (Int, Int) -> Int): Value {
     return Value.Number(f(v1n.n, v2n.n))
 }
 
-fun test(expr: Expr) {
+fun testEval(expr: Expr) {
     try {
         println(eval(persistentHashMapOf(), expr))
     } catch (ex: Exception) {
@@ -96,47 +87,52 @@ fun sum(n: Int): Int =
     }
 
 fun main() {
-    val identity = Expr.Lambda("x", Expr.Var("x"))
-    test(Expr.Number(10))
-    test(Expr.Var("x"))
-    test(identity)
-    test(Expr.Application(identity, Expr.Number(20)))
-    test(
-        Expr.Application(
-            Expr.Lambda("x", Expr.Lambda("y", Expr.Var("x"))),
-            Expr.Number(20)
-        )
-    )
-    test(
-        Expr.Application(
-            Expr.Application(
-                Expr.Lambda("x", Expr.Lambda("y", Expr.Var("x"))), Expr.Number(20)
-            ), Expr.Number(0)
-        )
-    )
-    test(Expr.Application(Expr.Number(5), Expr.Number(20)))
-    test(Expr.Binary(Operator.Plus, Expr.Number(5), Expr.Number(10)))
-    test(Expr.Binary(Operator.Plus, identity, Expr.Number(10)))
-    test(Expr.If(Expr.Boolean(true), Expr.Number(42), Expr.Number(10)))
-    test(Expr.If(Expr.Boolean(false), Expr.Number(42), Expr.Number(10)))
-    test(Expr.Binary(Operator.Equals, Expr.Number(10), Expr.Number(10)))
-    test(Expr.Binary(Operator.Equals, Expr.Number(10), Expr.Number(11)))
-    test(
-        Expr.If(
-            Expr.Binary(Operator.Equals, Expr.Number(10), Expr.Number(10)),
-            Expr.Number(42),
-            Expr.Number(10)
-        )
-    )
-
-    println(sum(5)) // 1 + 2 + 3 + 4 + 5 == 15
-
-    val z = Parser(Lexer("""\f => (\x => f(\v => x x v)) (\x => f(\v => x x v))""")).parseExpr()
-    val sumSingle = Parser(Lexer("""\f => \n => if n == 0 then 0 else n + f (n - 1)""")).parseExpr()
-
-    val sumLambda = Expr.Application(z, sumSingle)
-
-    test(Expr.Application(sumLambda, Expr.Number(5)))
+//    val identity = Expr.Lambda("x", Expr.Var("x"))
+//    test(Expr.Number(10))
+//    test(Expr.Var("x"))
+//    test(identity)
+//    test(Expr.Application(identity, Expr.Number(20)))
+//    test(
+//        Expr.Application(
+//            Expr.Lambda("x", Expr.Lambda("y", Expr.Var("x"))),
+//            Expr.Number(20)
+//        )
+//    )
+//    test(
+//        Expr.Application(
+//            Expr.Application(
+//                Expr.Lambda("x", Expr.Lambda("y", Expr.Var("x"))), Expr.Number(20)
+//            ), Expr.Number(0)
+//        )
+//    )
+//    test(Expr.Application(Expr.Number(5), Expr.Number(20)))
+//    test(Expr.Binary(Operator.Plus, Expr.Number(5), Expr.Number(10)))
+//    test(Expr.Binary(Operator.Plus, identity, Expr.Number(10)))
+//    test(Expr.If(Expr.Boolean(true), Expr.Number(42), Expr.Number(10)))
+//    test(Expr.If(Expr.Boolean(false), Expr.Number(42), Expr.Number(10)))
+//    test(Expr.Binary(Operator.Equals, Expr.Number(10), Expr.Number(10)))
+//    test(Expr.Binary(Operator.Equals, Expr.Number(10), Expr.Number(11)))
+//    test(
+//        Expr.If(
+//            Expr.Binary(Operator.Equals, Expr.Number(10), Expr.Number(10)),
+//            Expr.Number(42),
+//            Expr.Number(10)
+//        )
+//    )
+//
+//    println(sum(5)) // 1 + 2 + 3 + 4 + 5 == 15
+//
+//    val z = Parser(Lexer("""\f => (\x => f(\v => x x v)) (\x => f(\v => x x v))""")).parseExpr()
+//    val sumSingle = Parser(Lexer("""\f => \n => if n == 0 then 0 else n + f (n - 1)""")).parseExpr()
+//
+//    val sumLambda = Expr.Application(z, sumSingle)
+//
+//    test(Expr.Application(sumLambda, Expr.Number(5)))
+    testEval("""
+        let add3 = \x => x + 3 in
+        let twice = \f => \x => f (f x) in
+        twice add3 10
+    """.trimIndent())
 
     // Homework: Fibonacci
     // fib(0) = 1
