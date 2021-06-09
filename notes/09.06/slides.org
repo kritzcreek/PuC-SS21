@@ -1,0 +1,104 @@
+#+TITLE: Neunte Vorlesung
+#+DATE: 09.06.2021 PuC
+* Herzlich Willkommen
+
+Bitte an die Kameras denken
+
+Aufnahme starten
+
+* Agenda
+
+  Wiederholung
+
+  Polymorphismus
+
+* Wiederholung
+
+** Let Bindings
+
+Ein Let-binding weist einer Variable einen Wert zu, und macht die Variable
+in einem bestimmtem Bereich unseres Programs verfuegbar.
+
+Syntax:
+
+let x = e1 in e2
+
+Die operationale Semantik (Laufzeitverhalten) laesst sich durch
+eine Uebersetzung in Lambda beschreiben:
+
+let x = e1 in e2 == (\x => e2) e1
+
+Beispiel:
+
+let x = 10 in
+let y = 20 in
+x + y
+
+
+* Polymorphismus
+
+(Motivation von letzter Woche)
+Es gibt aktuell keinen "richtigen" Typen fuer \x => x
+Wir haben stattdessen unendlich viele gleich "korrekte":
+- Bool -> Bool
+- (Bool -> Bool) -> (Bool -> Bool)
+- (Bool -> Bool -> Bool) -> (Bool -> Bool -> Bool)
+- ...
+
+Wir wollen stattdessen einen Typen der in etwa so aussieht:
+
+\x => x : t -> t
+
+Wobei t eine _Typvariable_ ist.
+
+* Binder fuer Typvariablen
+
+Genau wie mit unseren Value-level Variablen brauchen wir einen
+Ort an dem die Typvariable gebunden wird. Dafuer verwenden wir
+syntaktisch das Keyword _forall_ (oder ∀ auf dem Whiteboard).
+
+\x => x : forall t. t -> t
+
+oder
+
+\x => x : ∀ t. t -> t
+
+_Wo_ es syntaktisch erlaubt ist eine Typvariable zu binden ist
+ein wichtiger Design-Punkt.
+
+* Polymorphismus erster Ordnung
+
+Wir erlauben Binder fuer Typvariable nur in der _auessersten_ Position eines
+Typs.
+
+Beispiel:
+
+~∀ a. (a -> a) -> a~ ist erlaubt
+~(∀ a. a -> a) -> a~ ist verboten!
+
+Diese Restriktion nennt man Polymorphismus erster Ordnung,
+oder Let-Polymorphismus (Inspiriert durch die SML Programmiersprache).
+
+* (Exkurs) Rank-N-Polymorphism
+
+Maechtigere Typsysteme ohne diese Restriktion erlauben sogennante
+_Rank-N-Types_. Der primaere Grund diese Art von Polymorphismus zu
+verbieten ist, dass er nicht vollstaendig inferierbar ist.
+
+Programmiersprachen _mit_ Rank-N-Polymorphismus:
+Haskell, PureScript, OCaml (ueber Umwege)
+
+Intern verwenden alle Typchecker fuer OO Sprachen Rank-N-Types, auch
+wenn sie es haeufig nicht so nennen.
+* Mono- vs Polytypen
+
+Um diese Restriktion in unserem Compiler umzusetzen trennen wir
+polymorphe Typen strikt von monomorphen.
+
+Wir erweitern unseren bisherigen Type Datentyp um einen Konstruktor
+fuer Typvariablen. Ausserdem benennen wir ihn in _Monotype_ um.
+
+Wir definieren Polytypen als:
+Polytype ::=
+  | Monotype
+  | ∀ a1 ... an. Monotype

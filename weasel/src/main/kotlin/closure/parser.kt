@@ -278,11 +278,6 @@ fun testParser(input: String) {
     println(parser.parseExpr())
 }
 
-fun testEval(input: String) {
-    println("Evaluating: $input")
-    println(eval(persistentHashMapOf(), Parser(Lexer(input)).parseExpr()))
-}
-
 fun main() {
     test("""
         if (\x => equals 25 x) 20
@@ -320,6 +315,5 @@ fun main() {
     println(eval(persistentHashMapOf(), Parser(Lexer(input)).parseExpr()))
 
     testParser("1 + 2")
-    testEval("2 * 2 + 3 == 7")
 }
 

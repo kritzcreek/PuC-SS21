@@ -201,6 +201,7 @@ Array-basierte Programmiersprache (Gartenarbeit)
 
 Mini-Sql Formatter
 - M. Yavuz Goekmen
+- Yussef Almuhammad Albarri
 
 Datentypen zu unserer Sprache hinzufuegen
 - Tobias Marcus

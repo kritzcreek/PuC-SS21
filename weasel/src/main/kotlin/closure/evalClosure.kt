@@ -67,9 +67,9 @@ fun evalBinaryNumber(v1: Value, v2: Value, f: (Int, Int) -> Int): Value {
     return Value.Number(f(v1n.n, v2n.n))
 }
 
-fun testEval(expr: Expr) {
+fun testEval(expr: String) {
     try {
-        println(eval(persistentHashMapOf(), expr))
+        println(eval(persistentHashMapOf("fix" to z), Parser(Lexer(expr)).parseExpr()))
     } catch (ex: Exception) {
         println("Failed to eval with: ${ex.message}")
     }
@@ -85,6 +85,11 @@ fun sum(n: Int): Int =
     } else {
         n + sum(n - 1)
     }
+
+val z = eval(
+    persistentHashMapOf(),
+    Parser(Lexer("""\f => (\x => f(\v => x x v)) (\x => f(\v => x x v))""")).parseExpr()
+)
 
 fun main() {
 //    val identity = Expr.Lambda("x", Expr.Var("x"))
@@ -128,11 +133,26 @@ fun main() {
 //    val sumLambda = Expr.Application(z, sumSingle)
 //
 //    test(Expr.Application(sumLambda, Expr.Number(5)))
-    testEval("""
+    testEval(
+        """
         let add3 = \x => x + 3 in
         let twice = \f => \x => f (f x) in
         twice add3 10
-    """.trimIndent())
+    """.trimIndent()
+    )
+
+    testEval(
+        """
+        let fib = fix \fib => \n => 
+          if n == 0 then 
+            1 
+          else if n == 1 then 
+            1 
+          else 
+            fib (n - 1) + fib (n - 2) in
+        fib 5
+        """.trimIndent()
+    )
 
     // Homework: Fibonacci
     // fib(0) = 1
