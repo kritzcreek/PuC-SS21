@@ -195,13 +195,12 @@ Parser-Kombinatoren
 - Moritz Brombach
 - Leon Schelzig
 
-Programmiersprache (genauere Absprache per Mail)
+Array-basierte Programmiersprache (Gartenarbeit)
 - Mathieu Sorg
 - Christiane Zapp
 
-Parser/Mini C Projekt
+Mini-Sql Formatter
 - M. Yavuz Goekmen
-- ?
 
 Datentypen zu unserer Sprache hinzufuegen
 - Tobias Marcus
@@ -223,6 +222,13 @@ Aeltere Chipsets
 
 Formatter fuer unsere Sprache (oder eine andere)
 - Serhat Nazlier
+- Raphael Wielandt
+
+Eine kleine imperative Programmiersprache
+- Julien Ronan Buschbacher
+
+Objekte nach Json kompilieren
+- Fedor Timofeev
 
 Moegliche Ideen/Themenbereiche
 
