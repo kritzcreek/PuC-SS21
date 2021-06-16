@@ -40,6 +40,7 @@ fun substitute(binder: String, replacement: Expr, expr: Expr): Expr {
     }
 }
 
+
 fun main() {
 //    val result = { x : Int -> { y : Int -> x }}(10)(2) == 10
 //    val shadowed = { x : Int -> { x : Int -> x }}(10)(2) == 2
