@@ -9,12 +9,14 @@ typealias Env = PersistentMap<String, Value>
 
 sealed class Value {
     data class Number(val n: Int) : Value()
+    data class Str(val s: kotlin.String) : Value()
     data class Closure(val env: Env, val binder: String, val body: Expr) : Value()
     data class Boolean(val b: kotlin.Boolean) : Value()
 }
 
 fun eval(env: Env, expr: Expr): Value {
     return when (expr) {
+        is Expr.Str -> Value.Str(expr.s)
         is Expr.Number -> Value.Number(expr.n)
         is Expr.Boolean -> Value.Boolean(expr.b)
         is Expr.Var -> env[expr.name] ?: throw Exception("${expr.name} is not defined.")

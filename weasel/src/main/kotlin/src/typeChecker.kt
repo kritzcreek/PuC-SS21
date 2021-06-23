@@ -9,6 +9,7 @@ import src.parsing.Parser
 
 sealed class Monotype {
     object Number : Monotype()
+    object Str : Monotype()
     object Bool : Monotype()
     data class Fun(val arg: Monotype, val res: Monotype) : Monotype() {
         override fun toString(): String = "($arg -> $res)"
@@ -35,7 +36,7 @@ sealed class Monotype {
 
     fun unknowns(): PersistentSet<Int> {
         return when (this) {
-            Bool, Number, is Var -> persistentSetOf()
+            Str, Bool, Number, is Var -> persistentSetOf()
             is Fun -> this.arg.unknowns().addAll(this.res.unknowns())
             is Unknown -> persistentSetOf(this.u)
         }
@@ -43,7 +44,7 @@ sealed class Monotype {
 
     fun substitute(v: String, replacement: Monotype): Monotype {
         return when (this) {
-            Bool, Number, is Unknown -> this
+            Str, Bool, Number, is Unknown -> this
             is Fun -> Fun(arg.substitute(v, replacement), res.substitute(v, replacement))
             is Var -> if (name == v) {
                 replacement
@@ -109,7 +110,7 @@ var solution: Solution = HashMap()
 
 fun applySolution(ty: Monotype, solution: Solution): Monotype {
     return when (ty) {
-        Monotype.Bool, Monotype.Number, is Monotype.Var -> ty
+       Monotype.Str, Monotype.Bool, Monotype.Number, is Monotype.Var -> ty
         is Monotype.Fun -> Monotype.Fun(applySolution(ty.arg, solution), applySolution(ty.res, solution))
         is Monotype.Unknown ->
             solution[ty.u]?.let { applySolution(it, solution) } ?: ty
@@ -149,6 +150,7 @@ fun infer(ctx: Context, expr: Expr): Monotype {
     return when (expr) {
         is Expr.Boolean -> Monotype.Bool
         is Expr.Number -> Monotype.Number
+        is Expr.Str -> Monotype.Str
         is Expr.Lambda -> {
             val tyArg = freshUnknown()
             val tyBody = infer(ctx.put(expr.binder, Polytype.fromMono(tyArg)), expr.body)

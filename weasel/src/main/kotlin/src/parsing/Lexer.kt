@@ -5,6 +5,13 @@ class Lexer(input: String) {
     private val iter: PeekableIterator<Char> = PeekableIterator(input.iterator())
     private var lookahead: Token? = null
 
+    fun lex(): MutableList<Token> {
+        val tokens = mutableListOf<Token>()
+        while(iter.hasNext())
+            tokens.add(next())
+        return tokens
+    }
+
     public fun next(): Token {
         lookahead?.let { lookahead = null; return it }
         consumeWhitespace()
@@ -22,6 +29,7 @@ class Lexer(input: String) {
             '-' -> Token.MINUS
             '*' -> Token.MUL
             '\\' -> Token.BACKSLASH
+            '"' -> string()
             '=' -> when (iter.peek()) {
                 '>' -> {
                     iter.next()
@@ -47,6 +55,14 @@ class Lexer(input: String) {
         return token
     }
 
+    fun string(): Token{
+        var result = ""
+        while (iter.hasNext() && iter.peek() != '"') {
+            result += iter.next()
+        }
+        iter.next()
+        return Token.Str(result)
+    }
     private fun number(c: Char): Token {
         var result = c.toString()
         while (iter.hasNext() && iter.peek().isDigit()) {
