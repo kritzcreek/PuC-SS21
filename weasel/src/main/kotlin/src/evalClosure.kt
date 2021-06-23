@@ -8,10 +8,35 @@ import src.parsing.Parser
 typealias Env = PersistentMap<String, Value>
 
 sealed class Value {
-    data class Number(val n: Int) : Value()
-    data class Str(val s: kotlin.String) : Value()
-    data class Closure(val env: Env, val binder: String, val body: Expr) : Value()
-    data class Boolean(val b: kotlin.Boolean) : Value()
+    data class Number(val n: Int) : Value(){
+        override fun toString(): String = n.toString()
+    }
+    data class Str(val s: String) : Value(){
+        override fun toString(): String = "\"$s\""
+    }
+    data class Closure(val env: Env, val binder: String, val body: Expr) : Value(){
+        override fun toString(): String = "$binder => $body"
+    }
+    data class Boolean(val b: kotlin.Boolean) : Value(){
+        override fun toString(): String = b.toString()
+    }
+}
+
+
+fun evalToJson(env: Env, block: Field.Block): String {
+    var s = "{ "
+    var i =0;
+    for (p in block.properties){
+        if (i != 0) s += ", "; i++
+
+        s += "\"${p.key}\": "
+        when (val v = p.value){
+            is Field.Monofield -> s+= (eval(env, v.value))
+            is Field.Block -> s+= evalToJson(env, v)
+        }
+    }
+    s += (" }")
+    return s
 }
 
 fun eval(env: Env, expr: Expr): Value {
@@ -80,7 +105,7 @@ fun testEval(expr: String) {
                 Parser(
                     Lexer(
                         expr
-                    )
+                    ).lexTokens()
                 )
                     .
                     parseExpr(
