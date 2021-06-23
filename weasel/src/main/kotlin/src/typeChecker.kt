@@ -209,7 +209,7 @@ fun infer(ctx: Context, expr: Expr): Monotype {
 
 fun testInfer(expr: String, ctx: Context = emptyContext) {
     solution = HashMap()
-    val parsed = Parser(Lexer((expr))).parseExpr()
+    val parsed = Parser(Lexer((expr)).lexTokens()).parseExpr()
     try {
         val inferred = applySolution(infer(ctx, parsed), solution)
         println("$expr : ${generalize(emptyContext, inferred)}")

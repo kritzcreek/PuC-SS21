@@ -5,8 +5,8 @@ class Lexer(input: String) {
     private val iter: PeekableIterator<Char> = PeekableIterator(input.iterator())
     private var lookahead: Token? = null
 
-    fun lex(): MutableList<Token> {
-        val tokens = mutableListOf<Token>()
+    fun lexTokens(): ArrayList<Token> {
+        val tokens = arrayListOf<Token>()
         while(iter.hasNext())
             tokens.add(next())
         return tokens

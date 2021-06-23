@@ -5,17 +5,28 @@ import src.Field
 import src.Operator
 
 
-class Parser(val tokens: Lexer) {
+class Parser(val tokens: ArrayList<Token>) {
+    private var index = 0
+
+    private fun peek(n: Int = 0): Token {
+        return tokens.getOrElse(index + n){ Token.EOF }
+    }
+
+    private fun next(n: Int = 1): Token {
+        val t = tokens.getOrElse(index){ Token.EOF }
+        index += n
+        return t
+    }
 
     fun parseField(): Field{
-        if (tokens.peek() == Token.CURLLEFT) return parseBlock()
+        if (peek() == Token.CURLLEFT) return parseBlock()
         return Field.Monofield(parseExpr())
     }
 
-    fun parseBlock(): Field {
+    fun parseBlock(): Field.Block {
         val result = hashMapOf<String,Field>()
         expectNext<Token.CURLLEFT>("{")
-        while (tokens.peek() != Token.CURLRIGHT){
+        while (peek() != Token.CURLRIGHT){
             val i = expectNext<Token.IDENT>("Identifier").ident
             expectNext<Token.DOUBLEDOT>(":")
 
@@ -27,8 +38,8 @@ class Parser(val tokens: Lexer) {
     }
 
     fun parseExpr(): Expr {
-        return when(tokens.peek()){
-            is Token.Str -> Expr.Str((tokens.next() as Token.Str).s)
+        return when{
+            peek() is Token.Str -> Expr.Str((next() as Token.Str).s)
             else -> parseBinary(0)
         }
     }
@@ -41,7 +52,7 @@ class Parser(val tokens: Lexer) {
             if (leftBP < minBP) {
                 break
             }
-            tokens.next()
+            next()
             val rhs = parseBinary(rightBP)
             lhs = Expr.Binary(op, lhs, rhs)
         }
@@ -60,7 +71,7 @@ class Parser(val tokens: Lexer) {
      */
 
     private fun parseOperator(): Operator? {
-        return when(tokens.peek()) {
+        return when(peek()) {
             Token.PLUS -> Operator.Plus
             Token.MINUS -> Operator.Minus
             Token.MUL -> Operator.Multiply
@@ -87,11 +98,11 @@ class Parser(val tokens: Lexer) {
     }
 
     fun parseAtom(): Expr {
-        return tryParseAtom() ?: throw Exception("Expected expression, but saw unexpected token: ${tokens.peek()}")
+        return tryParseAtom() ?: throw Exception("Expected expression, but saw unexpected token: ${peek()}")
     }
 
     fun tryParseAtom(): Expr? {
-        return when (val t = tokens.peek()) {
+        return when (val t = peek()) {
             is Token.BOOLEAN_LIT -> parseBoolean()
             is Token.NUMBER_LIT -> parseNumber()
             is Token.IDENT -> parseVar()
@@ -156,7 +167,7 @@ class Parser(val tokens: Lexer) {
     }
 
     private inline fun <reified A>expectNext(msg: String): A {
-        val next = tokens.next()
+        val next = next()
         if (next !is A) {
             throw Exception("Unexpected token: expected $msg, but saw $next")
         }
