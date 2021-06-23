@@ -1,10 +1,11 @@
-package closure
+package src
 
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentHashMapOf
 import kotlinx.collections.immutable.persistentSetOf
-import java.time.Month
+import src.parsing.Lexer
+import src.parsing.Parser
 
 sealed class Monotype {
     object Number : Monotype()
@@ -28,6 +29,7 @@ sealed class Monotype {
             is Fun -> "($arg -> $res)"
             is Unknown -> "u$u"
             is Var -> "$name"
+            is Str -> "String"
         }
     }
 
