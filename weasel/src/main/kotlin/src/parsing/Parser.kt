@@ -105,7 +105,7 @@ class Parser(val tokens: ArrayList<Token>) {
         return when (val t = peek()) {
             is Token.BOOLEAN_LIT -> parseBoolean()
             is Token.NUMBER_LIT -> parseNumber()
-            is Token.IDENT -> parseVar()
+            is Token.IDENT -> { if (peek(1) is Token.DOUBLEDOT)null else parseVar() }
             is Token.IF -> parseIf()
             is Token.BACKSLASH -> parseLambda()
             is Token.LPAREN -> parseParenthesized()
