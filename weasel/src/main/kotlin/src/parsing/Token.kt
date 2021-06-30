@@ -21,7 +21,7 @@ sealed class Token {
     object BACKSLASH : Token()
     object ARROW : Token()
     object EQUALS : Token()
-    object DOUBLEDOT: Token()
+
 
     //
     object DELIMITER: Token()
@@ -48,6 +48,7 @@ sealed class Token {
     object DOUBLE_EQUALS : Token()
 
     data class IDENT(val ident: String) : Token()
+    data class FIELDIDENT(val ident: String): Token()
 
     // Literals
     data class BOOLEAN_LIT(val b: Boolean) : Token()

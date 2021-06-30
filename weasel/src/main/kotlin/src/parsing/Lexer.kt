@@ -24,7 +24,6 @@ class Lexer(input: String) {
             '{' -> Token.CURLLEFT
             '}' -> Token.CURLRIGHT
             ';' -> Token.DELIMITER
-            ':' -> Token.DOUBLEDOT
             '+' -> Token.PLUS
             '-' -> Token.MINUS
             '*' -> Token.MUL
@@ -76,6 +75,12 @@ class Lexer(input: String) {
         while (iter.hasNext() && iter.peek().isJavaIdentifierPart()) {
             result += iter.next()
         }
+        if (iter.peek() == ':'){
+            iter.next()
+            return Token.FIELDIDENT(result)
+
+        }
+
         return when (result) {
             "true" -> Token.BOOLEAN_LIT(true)
             "false" -> Token.BOOLEAN_LIT(false)

@@ -27,8 +27,7 @@ class Parser(val tokens: ArrayList<Token>) {
         val result = hashMapOf<String,Field>()
         expectNext<Token.CURLLEFT>("{")
         while (peek() != Token.CURLRIGHT){
-            val i = expectNext<Token.IDENT>("Identifier").ident
-            expectNext<Token.DOUBLEDOT>(":")
+            val i = expectNext<Token.FIELDIDENT>("Field Identifier").ident
 
             val value = parseField()
             result[i] = value
@@ -105,9 +104,7 @@ class Parser(val tokens: ArrayList<Token>) {
         return when (val t = peek()) {
             is Token.BOOLEAN_LIT -> parseBoolean()
             is Token.NUMBER_LIT -> parseNumber()
-            // todo this is bad and i should feel bad.
-            // jannik, fix pls
-            is Token.IDENT -> { if (peek(1) is Token.DOUBLEDOT)null else parseVar() }
+            is Token.IDENT ->  parseVar()
             is Token.IF -> parseIf()
             is Token.BACKSLASH -> parseLambda()
             is Token.LPAREN -> parseParenthesized()
