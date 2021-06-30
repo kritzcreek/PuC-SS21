@@ -6,7 +6,7 @@ Das hier wird unser Projekt für PuC im Sommerstemester 2021. Wir wissen noch ni
 
 Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbeit damit für uns angenehmer zu gestalten.
 
-- [ ] Mathe innerhalb von JSON
+- [x] Mathe innerhalb von JSON
 - [ ] Let Bindings
   ```
   let x = {
@@ -45,7 +45,7 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
       repeat: 4
       startRotation: 90*repeat
   ```
-- [ ] Leading Kommas
+- [X] Leading Kommas
 
 
 ![duckdance.gif](https://cdn.discordapp.com/emojis/853294931472941136.gif?v=1)

@@ -1,6 +1,7 @@
 package src
 
 import kotlinx.collections.immutable.persistentHashMapOf
+import netscape.javascript.JSObject
 import src.parsing.Lexer
 import src.parsing.Parser
 import src.parsing.Token
@@ -26,17 +27,16 @@ fun testBlock(input: String) {
     val parser = Parser(lexer.lexTokens())
     val block = parser.parseBlock()
     println(block)
-
     println(evalToJson(persistentHashMapOf(), block))
 
 }
-
 fun main(){
     val ts = """
          {  
             foo: {
                 bar: (\x => x) 10 
                 foo: "Bar"
+                x: let a = "AAAHHHHHHHHHH" in a
             } 
          }""".trimIndent()
     testBlock(ts)
