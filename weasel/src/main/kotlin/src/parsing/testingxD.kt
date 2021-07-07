@@ -1,7 +1,6 @@
 package src
 
 import kotlinx.collections.immutable.persistentHashMapOf
-import netscape.javascript.JSObject
 import src.parsing.Lexer
 import src.parsing.Parser
 import src.parsing.Token
@@ -25,17 +24,22 @@ fun testBlock(input: String) {
     println("Parsing: $input")
     val lexer = Lexer(input)
     val parser = Parser(lexer.lexTokens())
-    val block = parser.parseBlock()
-    println(block)
-    println(evalToJson(persistentHashMapOf(), block))
+    val parsedBlock = parser.parseBlock()
+    val evaledBlock = evalBlock(persistentHashMapOf(),parsedBlock )
+    println(evaledBlock)
+
 
 }
+// todo LEXER, check for fieldname
+//
 fun main(){
     val simpleTest = """
          {  
             foo: {
-                bar: (\x => x) 10 
-                foo: "Bar"
+                thisShouldWork: (\x => x + 2) 10
+                thisShouldNotWork: let a = 10 in
+                                   let a = 9 in
+                                   if a == 10 then 10 else 0
                 x: let a = "AAAHHHHHHHHHH" in a
             } 
          }""".trimIndent()
@@ -43,14 +47,17 @@ fun main(){
 
     // let bindings
     val funTest = """
-        let a = { 
-            color: red 
+        let blockValue = { 
+            color: "red" 
         }
         
+        let fieldValue = "red"
+        
         { 
-            foo: 10
-            bar: a
+            foo: blockValue
+            bar: fieldValue
         }
+        
     """.trimIndent()
     testBlock(simpleTest)
 

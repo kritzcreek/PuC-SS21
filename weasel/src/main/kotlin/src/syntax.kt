@@ -11,7 +11,7 @@ sealed class Expr {
     data class Lambda(val binder: String, val body: Expr) : Expr()
     data class Application(val func: Expr, val arg: Expr) : Expr()
     data class Number(val n: Int) : Expr()
-    data class Str(val s: kotlin.String) : Expr()
+    data class Str(val s: String) : Expr()
     data class Boolean(val b: kotlin.Boolean) : Expr()
     data class Binary(val operator: Operator, val x: Expr, val y: Expr) : Expr()
     data class If(val condition: Expr, val thenBranch: Expr, val elseBranch: Expr) : Expr()
