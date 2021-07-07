@@ -56,7 +56,7 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
 | Probleme                       | Lösungen                                                     |
 | ------------------------------ | ------------------------------------------------------------ |
 | Keine leeren Lambas in Feldern | Parser angepasst, erkennt jetzt bei parseField ob es ein Lambda ist. |
-|                                |                                                              |
+| Erkennen, wann ein neues feld beginnt | Schon im Lexer auf ident + doublecolon pruefen        |
 |                                |                                                              |
 |                                |                                                              |
 |                                |                                                              |
