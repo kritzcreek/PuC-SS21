@@ -31,7 +31,7 @@ fun testBlock(input: String) {
 
 }
 fun main(){
-    val ts = """
+    val simpleTest = """
          {  
             foo: {
                 bar: (\x => x) 10 
@@ -39,6 +39,19 @@ fun main(){
                 x: let a = "AAAHHHHHHHHHH" in a
             } 
          }""".trimIndent()
-    testBlock(ts)
+
+
+    // let bindings
+    val funTest = """
+        let a = { 
+            color: red 
+        }
+        
+        { 
+            foo: 10
+            bar: a
+        }
+    """.trimIndent()
+    testBlock(simpleTest)
 
 }

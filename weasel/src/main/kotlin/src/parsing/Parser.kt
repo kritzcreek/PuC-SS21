@@ -18,6 +18,13 @@ class Parser(val tokens: ArrayList<Token>) {
         return t
     }
 
+    fun parse(): Field.Block{
+        when(val t = next()) {
+            is Token.CURLLEFT -> return parseBlock()
+            else -> throw Exception("Unexpected token: $t")
+        }
+    }
+
     fun parseField(): Field{
         if (peek() == Token.CURLLEFT) return parseBlock()
         return Field.Monofield(parseExpr())
