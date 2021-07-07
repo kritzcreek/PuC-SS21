@@ -3,6 +3,7 @@ package src.parsing
 import src.Expr
 import src.Field
 import src.Operator
+import src.Value
 
 
 class Parser(val tokens: ArrayList<Token>) {
@@ -27,7 +28,9 @@ class Parser(val tokens: ArrayList<Token>) {
 
     fun parseField(): Field{
         if (peek() == Token.CURLLEFT) return parseBlock()
-        return Field.Monofield(parseExpr())
+        val result = parseExpr()
+        if (result is Expr.Lambda) throw Exception("Fields shouldn't just consist of lambdas like this: \n$result" )
+        return Field.Monofield(result)
     }
 
     fun parseBlock(): Field.Block {
