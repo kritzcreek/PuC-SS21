@@ -8,6 +8,20 @@ import src.parsing.Parser
 typealias Env = PersistentMap<String, Value>
 
 sealed class Value {
+    data class JsonBlock(val properties: HashMap<String, Value>): Value(){
+        override fun toString(): String {
+            var s = "{ "
+            var setColon = false
+            for (p in properties) {
+                // { "foo": 5, "bar": 6 }
+                if (setColon) s += ", "
+                else setColon = true
+                s += "\"${p.key}\": ${p.value}"
+            }
+            s += " }"
+            return s
+        }
+    }
     data class Number(val n: Int) : Value(){
         override fun toString(): String = n.toString()
     }
@@ -22,22 +36,19 @@ sealed class Value {
     }
 }
 
-
-fun evalToJson(env: Env, block: Field.Block): String {
-    var s = "{ "
-    var i =0;
-    for (p in block.properties){
-        if (i != 0) s += ", "; i++
-
-        s += "\"${p.key}\": "
-        when (val v = p.value){
-            is Field.Monofield -> s+= (eval(env, v.value))
-            is Field.Block -> s+= evalToJson(env, v)
+fun evalBlock(env: Env, block: Field.Block): Value.JsonBlock {
+    val b = Value.JsonBlock(hashMapOf())
+    for (p in block.properties) {
+        b.properties[p.key] = when (val v = p.value){
+            is Field.Block      -> evalBlock(env, v)
+            is Field.Monofield  ->  evalMonoField(env, v)
         }
     }
-    s += (" }")
-    return s
+    return b
 }
+
+fun evalMonoField(env: Env, monoField: Field.Monofield): Value =
+     eval(env, monoField.value)
 
 fun eval(env: Env, expr: Expr): Value {
     return when (expr) {
