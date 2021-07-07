@@ -19,7 +19,7 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
   => Evaluates to valid JSON
   ```
 
-- [ ] Keine Gänsefüßchen (und evtl keine Kommas) mehr
+- [x] Keine Gänsefüßchen (und evtl keine Kommas) mehr
   ```
   {
     field: "value"
@@ -28,7 +28,10 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
   ```
 
 - [ ] Kommentare
-- [ ] Newlines (eventuell als Seperator)
+- [x] Newlines (eventuell als Seperator)
+
+### Backlog, everything here is optional
+
 - [ ] Building Block Functions
   ```kt
   fun a(foo: string) = 
@@ -37,7 +40,6 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
     welt: "bar"
   }
   ```
-
 - [ ] Repeat Blocks (if we're crazy enough)
   ```yaml
   helix:
@@ -45,7 +47,27 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
       repeat: 4
       startRotation: 90*repeat
   ```
+- unordered evaluation? 
 - [X] Leading Kommas
 
 
 ![duckdance.gif](https://cdn.discordapp.com/emojis/853294931472941136.gif?v=1)
+
+| Probleme                       | Lösungen                                                     |
+| ------------------------------ | ------------------------------------------------------------ |
+| Keine leeren Lambas in Feldern | Parser angepasst, erkennt jetzt bei parseField ob es ein Lambda ist. |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+|                                |                                                              |
+
